@@ -5,7 +5,7 @@ First clone the repo, then:
 
     nvm use
     npm install
-    npm run [filepath]
+    npm start [filepath]
   
 ______________________________________
 # Technical test subject...
