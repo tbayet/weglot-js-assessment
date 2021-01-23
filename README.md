@@ -329,12 +329,11 @@ async function getFilledIndexes() {
 
 > - Si on admet que getStatus et getUsersId peuvent lever aussi une erreur, alors il vaut mieux gérer les erreurs dans leur scope respectif
 > - le for() peut etre remplacé par un filter()
+> - On peut réaliser toutes les promises en parralleles car elles ne dépendent pas les unes des autres
 >```js
 >async function getFilledIndexes() {
 >   try {
->      const indexes = await getIndexes();
->      const status = await getStatus();
->      const usersId = await getUsersId();
+>      const [indexes, status, usersId] = await Promise.all([getIndexes, getStatus, getUsersId]);
 >      
 >      const filledIndexes = indexes.filter(index => (
 >         index.status === status.filled
