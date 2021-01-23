@@ -1,3 +1,16 @@
+### GET STARTED
+*Project for a technical test*
+
+First clone the repo, then:
+
+    nvm use
+    npm install
+    npm run -filepath
+  
+______________________________________
+# Technical test subject...
+
+
 The first rule is, **do not** fork this repo, clone it or use it as template.
 
 The second rule is, **do not** fork this repo, clone it or use it as template.
@@ -116,6 +129,11 @@ const values = data.reduce((values, { value }) => {
 }, []);
 ```
 
+> Inutile de faire un reduce() pour ça:
+> ```js
+> const values = data.map({ value } => value)
+> ```
+
 2. 
 
 ```js
@@ -130,6 +148,19 @@ async function analyzeIndexes() {
    return indexes;
 }
 ```
+
+> - await est optionnel dans un return, le linter AirBNB le flag je crois, mais moi j'aime bien, pour la compréhension du code
+> - Si on utilise async/await pour une fonction, alors on utilise un try-catch
+>```js
+>async function analyzeIndexes() {
+>   try { 
+>      const indexes = await getIndexes()
+>      return indexes;
+>   } catch(_) {
+>      throw new Error('Unable to fetch indexes');
+>   }
+>}
+>```
 
 3. 
 
@@ -151,6 +182,19 @@ if (user) {
 ctx.body = state;
 ```
 
+> Le code peut être simplifié:
+>```js
+>ctx.body = {
+>   user: null,
+>   project: null
+>}
+>const user = getUser();
+>if (user) {
+>   ctx.body.user = user
+>   ctx.body.project = getProject(user.id);
+>}
+>```
+
 4. 
 
 ```js
@@ -164,6 +208,15 @@ function getQueryProvider() {
 }
 ```
 
+> On peut simplement retourner provider, qui sera null si "match()" ne trouver aucune correspondance, plutot que de renvoyer undefined
+>```js
+>function getQueryProvider() {
+>  const url = window.location.href;
+>  const [_, provider] = url.match(/provider=([^&]*)/);
+>  return provider;
+>}
+>```
+
 5. 
 
 ```js
@@ -175,6 +228,13 @@ function getParagraphTexts() {
    return texts;
 }
 ```
+
+> Utiliser plutot un Object.assign ou le spread operator
+>```js
+>function getParagraphTexts() {
+>   return [...document.querySelectorAll("p")]
+>}
+>```
 
 6. 
 
@@ -220,6 +280,31 @@ function Employee({ id }) {
 }
 ```
 
+> le state de base de sera pas reassigné si l'ID change, pourtant le chargement de la request devrait impliquer le retour du component Loading. Meme situation si l'user recharge la page apres avoir eu une erreur. L'ordre des if() pose aussi problème
+>```js
+>useEffect(() => {
+>   setLoading(true);
+>   getEmployee(id)
+>      .then(employee => {
+>         setEmployee(employee);
+>         setError(false);
+>         setLoading(false);
+>      })
+>      .catch(_ => {
+>         setError('Unable to fetch employee');
+>         setLoading(false);
+>      });
+>}, [id]);
+>
+>if (loading) {
+>   return <Loading />;
+>}
+>
+>if (error) {
+>   return <Error />;
+>}
+>```
+
 7. 
 
 ```js
@@ -242,6 +327,26 @@ async function getFilledIndexes() {
 }
 ```
 
+> - Si on admet que getStatus et getUsersId peuvent lever aussi une erreur, alors il vaut mieux gérer les erreurs dans leur scope respectif
+> - le for() peut etre remplacé par un filter()
+>```js
+>async function getFilledIndexes() {
+>   try {
+>      const indexes = await getIndexes();
+>      const status = await getStatus();
+>      const usersId = await getUsersId();
+>      
+>      const filledIndexes = indexes.filter(index => (
+>         index.status === status.filled
+>         && usersId.includes(index.userId)
+>      ))
+>      return filledIndexes;
+>   } catch(error) {
+>      throw error;
+>   }
+>}
+>```
+
 8. 
 
 ```js
@@ -258,3 +363,13 @@ function getUserSettings(user) {
    return {};
 }
 ```
+
+> Le code est trop horizontal pour le peu d'opérations qu'il présente, ça le rend peu lisible:
+>```js
+>function getUserSettings(user) {
+>   const project = user && getProject(user.id);
+>   const settings = project && getSettings(project.id);
+>   return settings || {};
+>}
+>```
+
