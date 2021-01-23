@@ -6,6 +6,11 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "node src/index.js",
-    "test": "echo 'Not implemented yet';"
+    "test": "jest",
+    "lint": "standard"
+  },
+  "devDependencies": {
+    "jest": "26.6.3",
+    "standard": "16.0.3"
   }
 }
